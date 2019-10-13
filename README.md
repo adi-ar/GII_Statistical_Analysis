@@ -32,7 +32,7 @@ The data files have been pre-processed to prepare the data for analysis on softw
 The UNDP GII data includes the columns HDI rank and GII score, which are calculated based on the independent variables. These present redundant information in the context of our model, and have been removed using MS Excel, along with other additional columns. 
 In the historical data on % women in politics and ratio of girls in education, the average of these values by country were calculated using the MS Excel Pivot function, and added to the data file.
 
-Assumptions:
+* Assumptions:
 Linear Regression makes no assumptions regarding the distribution of the variables.
 The method makes several assumptions regarding the model like:
 1.	Linear relationship between outcome and predictor variables
@@ -60,28 +60,22 @@ hist(data$`Labour force participation rate `,xlab = "Labour force Participation"
  
 
 2.	Correlation matrix created to check multicollinearity:
-                  ABR        PARL         SEC        LABF     PARL_AV   PARL_2005        PRIM
-ABR        1.00000000 -0.07108620 -0.67360297  0.23745327 -0.09828329 -0.15605036 -0.39971310
-PARL      -0.07108620  1.00000000  0.11246755  0.18050415  0.94268643  0.76539662  0.07996179
-SEC       -0.67360297  0.11246755  1.00000000 -0.07663005  0.14653707  0.20585191  0.36523524
-LABF       0.23745327  0.18050415 -0.07663005  1.00000000  0.19685090  0.27343600  0.04950340
-PARL_AV   -0.09828329  0.94268643  0.14653707  0.19685090  1.00000000  0.88581343  0.03750461
-PARL_2005 -0.15605036  0.76539662  0.20585191  0.27343600  0.88581343  1.00000000  0.09492719
-PRIM      -0.39971310  0.07996179  0.36523524  0.04950340  0.03750461  0.09492719  1.00000000
+
 
 There is a high collinearity between the variables PARL, PARL_AV, and PARL_20015, which is expected.
 Of the three, the average share of women in the parliament over the years, is most highly correlated with Adolescent Birth Rate. 
 The PARL and PARL_2005 variables are removed.
 
-                ABR         SEC        LABF     PARL_AV        PRIM
-ABR      1.00000000 -0.67360297  0.23745327 -0.09828329 -0.39971310
-SEC     -0.67360297  1.00000000 -0.07663005  0.14653707  0.36523524
-LABF     0.23745327 -0.07663005  1.00000000  0.19685090  0.04950340
-PARL_AV -0.09828329  0.14653707  0.19685090  1.00000000  0.03750461
-PRIM    -0.39971310  0.36523524  0.04950340  0.03750461  1.00000000
+          |      ABR         |SEC        |LABF     |PARL_AV        |PRIM
+ABR      |1.00000000 |-0.67360297  |0.23745327 |-0.09828329 |-0.39971310
+SEC     |-0.67360297  |1.00000000 |-0.07663005 | 0.14653707|  0.36523524
+LABF     |0.23745327 |-0.07663005  |1.00000000  |0.19685090  |0.04950340
+PARL_AV |-0.09828329 | 0.14653707 | 0.19685090 | 1.00000000 | 0.03750461
+PRIM    |-0.39971310  |0.36523524  |0.04950340 | 0.03750461  1.00000000
 
 No multicollinearity among independent variables. 
 3.	Relationship between dependent and independent variables can be visually checked for linearity using scatter plots
+
 #Scatterplots to inspect linearity
 plot(gii_data$ABR, gii_data$PARL, xlab = "Adolescent Birth Rate", ylab = "Current Share of Parliament Seat")
 plot(gii_data$ABR, gii_data$SEC, xlab = "Adolescent Birth Rate", ylab = "% with Secondary Education")
@@ -98,6 +92,7 @@ It is observed that the relationship between Adolescent Birth Rate and Ratio of 
 The variable in a ratio not bound by 0 and 1, but cannot be negative.
 A log transformation can be applied to attempt to create a linear relationship.
 
+
 #Log tranformaion on PRIM
 gii_data$PRIM_LOG = log(gii_data$PRIM)
 plot(gii_data$ABR, gii_data$PRIM_LOG)
@@ -105,7 +100,7 @@ plot(gii_data$ABR, gii_data$PRIM_LOG)
 
 This needs to be further examined during model creation.
  
-Linear Model Creation and Interpretation:
+* Linear Model Creation and Interpretation:
 
 As per above discussion, PARL and PARL_2005 are not used in the model.
 
@@ -130,8 +125,8 @@ SEC           -0.73790    0.08199  -9.000 1.16e-15 ***
 LABF           0.57763    0.14709   3.927 0.000133 ***
 PARL_AV       -0.23558    0.23346  -1.009 0.314636    
 PRIM_LOG    -113.24396   39.59564  -2.860 0.004862 ** 
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+-- -
+Signif. codes:  0 ‘* * *’ 0.001 ‘* *’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 26.96 on 145 degrees of freedom
   (41 observations deleted due to missingness)
@@ -139,7 +134,7 @@ Multiple R-squared:  0.5171,	Adjusted R-squared:  0.5038
 F-statistic: 38.82 on 4 and 145 DF,  p-value: < 2.2e-16
 
 
-Variable Selection
+* Variable Selection
 
 It is observed that PARL_AV, Average Share of Women in Parliament is not a significant variable in the model.
 The variable is removed and the model is re-evaluated:
@@ -154,12 +149,12 @@ Residuals:
 
 Coefficients:
               Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   62.29200    9.57732   6.504 1.02e-09 ***
-SEC           -0.76629    0.07924  -9.670  < 2e-16 ***
-LABF           0.52522    0.13930   3.770 0.000231 ***
-PRIM_LOG    -118.22394   39.23618  -3.013 0.003021 ** 
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+(Intercept)   62.29200    9.57732   6.504 1.02e-09 * * *
+SEC           -0.76629    0.07924  -9.670  < 2e-16 * * *
+LABF           0.52522    0.13930   3.770 0.000231 * * *
+PRIM_LOG    -118.22394   39.23618  -3.013 0.003021 * * 
+- --
+Signif. codes:  0 ‘* * *’ 0.001 ‘* *’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 27.15 on 155 degrees of freedom
   (32 observations deleted due to missingness)
@@ -192,11 +187,11 @@ Residuals:
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 73.09258    9.19480   7.949 3.35e-13 ***
-SEC         -0.86607    0.07491 -11.561  < 2e-16 ***
-LABF         0.47354    0.14225   3.329  0.00108 ** 
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+(Intercept) 73.09258    9.19480   7.949 3.35e-13 * * *
+SEC         -0.86607    0.07491 -11.561  < 2e-16 * * *
+LABF         0.47354    0.14225   3.329  0.00108 * * 
+- --
+Signif. codes:  0 ‘* * *’ 0.001 ‘* *’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 27.89 on 158 degrees of freedom
   (30 observations deleted due to missingness)
@@ -212,10 +207,11 @@ The standard residuals are also within the Cook’s distance, indicating there a
 We can perform further tests on the model to verify that assumptions are met,
 
 
-Testing Assumptions
+* Testing Assumptions
 
 1.	Linear Relationship between independent and dependent variables:
 This was verified during preliminary analysis
+
 2.	Multicollinearity:
 Using the correlation matrix, it was observed that no two dependent variables are highly correlated with each other.
 A Variation Influence Factor (VIF) test can be conducted to further confirm absence of multicollinearity.
@@ -277,17 +273,18 @@ Non-constant Variance Score Test
 Variance formula: ~ fitted.values 
 Chisquare = 52.73816    Df = 1     p = 3.811141e-13
 
+
 The p value is well below the critical value, and presence of heteroscedasticity is confirmed.
 Violation of this assumption means that the model confidence intervals are not reliable, and the model cannot be used to produce reliable predictions.
 However, the model can still be used for calculating the mean response of the independent variable with changes in the dependent variables.
 The Beta values of the regression equations are still valid, however not optimal. Pg. 951, A. Field., Discovering Statistics using IBM SPSS Statistics 4th edition
-Logistic Regression
+* Logistic Regression
 We want to measure the impact of gender disparity on the overall HDI status of a country.
 While the % of women with secondary education is included in the GII calculation, ratio of girls to boys in education is not used.
 The combination of these metrics will be helpful in differentiating between countries with generally low levels of education, from countries where there is a lesser ratio of girls, pointing to a potential systemic disadvantage to girls.
 The latest available data for ratio of girls in primary, secondary and tertiary education is used from the data.un.org files, and these variables are coded as PRIMR, SECR and TERR.
 
-Logistic Regression: Preliminary Analysis
+* Logistic Regression: Preliminary Analysis
 A correlation matrix is created in R to check for multicollinearity in dependent variables.
 Cor(glm_vars, use = “pairwise.complete.obs”)
 
@@ -314,12 +311,12 @@ Deviance Residuals:
 Coefficients:
             Estimate Std. Error z value Pr(>|z|)   
 (Intercept)   10.267      6.883   1.492  0.13580   
-GII          -19.018      6.108  -3.114  0.00185 **
+GII          -19.018      6.108  -3.114  0.00185 * *
 PRIMR          2.260      5.626   0.402  0.68787   
 SECR          -4.572      3.225  -1.418  0.15629   
 TERR           3.115      1.550   2.009  0.04455 * 
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+-- -
+Signif. codes:  0 ‘* * *’ 0.001 ‘* *’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
@@ -341,10 +338,10 @@ Deviance Residuals:
 
 Coefficients:
             Estimate Std. Error z value Pr(>|z|)    
-(Intercept)  -11.963      2.376  -5.036 4.75e-07 ***
-GII           21.207      4.404   4.815 1.47e-06 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+(Intercept)  -11.963      2.376  -5.036 4.75e-07 * * *
+GII           21.207      4.404   4.815 1.47e-06 * * *
+- --
+Signif. codes:  0 ‘* * *’ 0.001 ‘* *’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
@@ -354,7 +351,7 @@ AIC: 67.761
 
 Number of Fisher Scoring iterations: 7
 
-Logistic Regression Model Evaluation
+*Logistic Regression Model Evaluation
 The performance of the model can be visually examined by creating a Receiver Operator Characteristic (ROC) Curve, which helps visualize the True Positive and False Positive Rates of the model for different Threshold values.
 #Operating Characteristics of model
 glm_pred = predict(glm_model, type = "response")
@@ -362,14 +359,14 @@ ROCPred = prediction(glm_pred, glm_data$HDIL)
 ROCPerf = performance(ROCPred, "tpr", "fpr")
 plot(ROCPerf, colorize = T)
  
-The Accuracy statistics of the model using optimal Threshold value can be checked in R.
+* The Accuracy statistics of the model using optimal Threshold value can be checked in R.
 > #Classification Table
 > classification_table(glm_model, glm_model$model[,1])
 
-       Actual
-Predict   0   1
-      0 126   6
-      1   7  20
+       |Actual|
+Predict |  0 |  1
+     0 |126  | 6
+     1 |  7 | 20
 Specificity:  0.7407407 
 Sensitivity:  0.9545455 
 Total Accuracy:  0.918239
@@ -378,7 +375,7 @@ The model achieves an accuracy of 0.918 against a baseline accuracy of 0.83.
 Testing Predictive Power and Goodness of Fit
 The Predictive Power of the model can be estimated using several tests that calculate Pseudo R-Squared value of the model:
  
-The Goodness of Fit of the Model can be estimated with the Hosmer and Lemeshow Test:
+* The Goodness of Fit of the Model can be estimated with the Hosmer and Lemeshow Test:
 > generalhoslem::logitgof(glm_data$HDIL, fitted(glm_model))
 
 	Hosmer and Lemeshow test (binary model)
@@ -386,11 +383,11 @@ The Goodness of Fit of the Model can be estimated with the Hosmer and Lemeshow T
 data:  glm_data$HDIL, fitted(glm_model)
 X-squared = 3.0555, df = 8, p-value = 0.9308
 
-The null hypothesis for the test is rejected, and we can conclude that the model is significant.
+* The null hypothesis for the test is rejected, and we can conclude that the model is significant.
 Interpretation
 An increase in the Gender Inequality Index score by 0.01, increases the odds of a country belonging to the Low HDI group by 1.2 times, or 20%.
 
-Findings 
+* Findings 
 It is found that the share of women in parliament is not a significant variable in predicting the Adolescent Birth Rate in a country.
 The Percentage of women with secondary education, and Labour Force participation are both significant, with coefficients -0.86 and 0.47 respectively.
 The positive coefficient for Labour Force participation maybe viewed as surprising, as this indicates that counties with higher labour force participation on women, also have higher adolescent birth rate.
